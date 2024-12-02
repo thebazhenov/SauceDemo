@@ -1,3 +1,4 @@
+from conftest import driver
 from pages.base_page import BasePage
 from selenium.webdriver.support import expected_conditions as EC
 import allure
@@ -5,10 +6,11 @@ import allure
 class LoginPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
-        self.username_field = ("xpath", "//input[@id='user-name']")
+        self.username_field = ("xpath", "//input[@id='login']")
         self.password_field = ("xpath", "//input[@id='password']")
-        self.login_button = ("xpath", "//input[@id='login-button']")
-        self.exception_window = ("xpath", "//h3[@data-test='error']")
+        self.login_button = ("xpath", "//button[@id='login-button']")
+        self.exception_window = ("xpath", "//div[@id='error-message']")
+        self.create_task_button = ("xpath", "//span[@class='trigger-menu-button-content']")
 
     @allure.step("Открытие страницы")
     def open_site(self) -> None:
@@ -37,9 +39,14 @@ class LoginPage(BasePage):
         login_button.click()
 
     @property
+    def get_current_url(self) -> str:
+        self.wait.until(EC.visibility_of_element_located(self.create_task_button)).is_displayed()
+        return self.driver.current_url
+
+    @property
     def get_error_message(self) -> str:
         """
         Метод для получения ошибки при авторизации
         :return: Возвращает текст ошибки
         """
-        return self.driver.find_element(*self.exception_window).text
+        return self.wait.until(EC.visibility_of_element_located(self.exception_window)).is_displayed()

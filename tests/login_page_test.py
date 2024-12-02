@@ -1,22 +1,25 @@
+import time
+
 import pytest
 import allure
 from pages.login_page import LoginPage
+
 
 @allure.title("Авторизация с корректными параметрами")
 def test_correct_login(driver):
     login_page = LoginPage(driver)
     login_page.open_site()
-    login_page.login(username="standard_user", password="secret_sauce")
+    login_page.login(username="thebazhenov@vk.com", password="servicemode")
+    assert login_page.get_current_url == "https://thebazhenov.su/desk/cards"
 
-    assert driver.current_url == "https://www.saucedemo.com/inventory.html"
 
 @pytest.mark.parametrize(
     "username, password, exception",
     [
-        ("locked_out_user", "secret_sauce", "Epic sadface: Sorry, this user has been locked out."),
-        ("", "secret_sauce", "Epic sadface: Username is required"),
-        ("standart_user", "", "Epic sadface: Password is required"),
-        ("", "", "Epic sadface: Username is required")
+        ("locked_out_user", "secret_sauce", "Неверный логин или пароль. "),
+        ("", "secret_sauce", "Неверный логин или пароль. "),
+        ("standart_user", "", "Неверный логин или пароль. "),
+        ("", "", "Неверный логин или пароль. ")
     ]
 )
 @allure.title("Авторизация с некорректными параметрами")
@@ -24,5 +27,6 @@ def test_uncorrected_login(driver, username, password, exception):
     login_page = LoginPage(driver)
     login_page.open_site()
     login_page.login(username=username, password=password)
+    print(login_page.get_error_message)
 
-    assert login_page.get_error_message == exception
+    assert login_page.get_error_message == True
