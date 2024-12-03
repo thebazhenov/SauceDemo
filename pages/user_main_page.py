@@ -1,3 +1,5 @@
+from selenium.webdriver.remote.webelement import WebElement
+
 from conftest import driver
 from pages.base_page import BasePage
 from selenium.webdriver.support import expected_conditions as EC
@@ -32,6 +34,7 @@ class UserMainPage(BasePage):
         self.modal_question_window = ("xpath", "//div[@class='modal-question__wrap']")
         self.modal_question_window_yes = ("xpath", "//span[@class='mat-button-wrapper' and text()='Да']")
         self.check_window_delete = ("xpath", "//div[@class='document normal-screen ng-star-inserted']/*[contains(text(), 'Удалено')]")
+        self.person_documents = ("xpath", "//a[@class='left-lists__menu__item ng-star-inserted']")
 
     def create_task(self, name_task: str = "AQA Test") -> None:
         """
@@ -62,10 +65,15 @@ class UserMainPage(BasePage):
         self.clickable(self.span_ready_for_document).click()
         time.sleep(5)
 
-    def delete_person_document(self, name_document) -> bool:
+    def delete_person_document(self, document: WebElement) -> bool:
+        """
+        Метод удаляет все персональные документы на главной странице пользователя
+        :param document: Вебэлемент от find.element
+        :return: Возвращает True | False в зависимости от успешности
+        """
         try:
-            self.find_document_delete = ("xpath", f"//div[@class='mat-tooltip-trigger left-lists__menu__item__title' and text()={name_document}]")
-            self.clickable(self.find_document_delete).click()
+            # self.find_document_delete = ("xpath", f"//div[@class='mat-tooltip-trigger left-lists__menu__item__title' and text()={name_document}]")
+            self.visibility(self.document).click()
             self.clickable(self.setting_document).click()
             self.clickable(self.button_delete_document).click()
             self.visibility(self.modal_question_window)
@@ -77,6 +85,10 @@ class UserMainPage(BasePage):
 
     @property
     def check_delete_document(self) -> bool:
+        """
+        Проверяет удаление элемента через модальное окно
+        :return: bool True | False в зависимости от успешности
+        """
         try:
             return self.visibility(self.check_window_delete).is_displayed()
         except Exception as e:
@@ -85,6 +97,10 @@ class UserMainPage(BasePage):
 
     @property
     def check_save_document(self) -> bool:
+        """
+        
+        :return:
+        """
         try:
             return self.visibility(self.save_document_window).is_displayed()
         except Exception as e:
@@ -106,6 +122,19 @@ class UserMainPage(BasePage):
             print(f"Ошибка при попытке найти активацию режима администратора: {e}")
             return False
 
+    def delete_all_person_document(self):
+        try:
+            documents = self.finds(self.person_documents)
+            for document in documents:
+                self.visibility(document).click()
+                self.clickable(self.setting_document).click()
+                self.clickable(self.button_delete_document).click()
+                self.visibility(self.modal_question_window)
+                self.clickable(self.modal_question_window_yes).click()
+            return True
+        except Exception as e:
+            print(f"Встретилась ошибка {e}")
+            return False
 
 
 

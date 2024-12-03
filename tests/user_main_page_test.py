@@ -11,7 +11,7 @@ from conftest import driver
 def open_and_login(driver):
     login_page = LoginPage(driver)
     login_page.open_site()
-    login_page.login(username="thebazhenov@vk.com", password="servicemode")
+    login_page.login(username="r.bazhenov@evateam.ru", password="Bazhenov69")
 
     return UserMainPage(driver)
 
@@ -45,6 +45,13 @@ def test_create_personal_document(open_and_login):
 def test_delete_personal_document(open_and_login):
     user_main_page = open_and_login
     user_main_page.delete_person_document(name_document="IFAT 23")
+
+    assert user_main_page.check_delete_document
+
+
+def test_delete_all_documents(open_and_login):
+    user_main_page = open_and_login
+    user_main_page.delete_all_person_document()
 
     assert user_main_page.check_delete_document
 

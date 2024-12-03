@@ -8,7 +8,7 @@ class BasePage:
     def __init__(self, driver: WebDriver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 15, poll_frequency=1)
-        self.base_url = "https://thebazhenov.su/"
+        self.base_url = "https://thebazhenov.evateam.ru/"
         self.action = ActionChains(driver)
 
     def clickable(self, locator: tuple):
@@ -16,3 +16,6 @@ class BasePage:
 
     def visibility(self, locator: tuple):
         return self.wait.until(EC.visibility_of_element_located(locator))
+
+    def finds(self, locator: tuple):
+        return self.driver.find_elements(*locator)
